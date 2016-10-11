@@ -34,7 +34,8 @@ GOX_ARGS = "-output={{.Dir}}-$(VERSION)_{{.OS}}_{{.Arch}}"
 
 BINTRAY_URI = https://api.bintray.com
 BINTRAY_USERNAME = nlamirault
-BINTRAY_REPOSITORY= oss
+BINTRAY_ORG = zeiot
+BINTRAY_REPOSITORY= jarvis
 
 NO_COLOR=\033[0m
 OK_COLOR=\033[32;01m
@@ -115,7 +116,7 @@ binaries: ## Upload all binaries
 	for i in $(EXE); do \
 		curl -T $$i \
 			-u$(BINTRAY_USERNAME):$(BINTRAY_APIKEY) \
-			"$(BINTRAY_URI)/content/$(BINTRAY_USERNAME)/$(BINTRAY_REPOSITORY)/$(APP)/${VERSION}/$$i;publish=1"; \
+			"$(BINTRAY_URI)/content/$(BINTRAY_ORG)/$(BINTRAY_REPOSITORY)/$(APP)/${VERSION}/$$i;publish=1"; \
         done
 
 # for goprojectile
