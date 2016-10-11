@@ -107,7 +107,7 @@ coverage: ## Launch code coverage
 
 gox: ## Make all binaries
 	@echo -e "$(OK_COLOR)[$(APP)] Create binaries $(NO_COLOR)"
-	$(GOX) $(GOX_ARGS) github.com/Zeiot/jarvis-bot
+	$(GOX) $(GOX_ARGS) github.com/zeiot/jarvis-bot
 
 .PHONY: binaries
 binaries: ## Upload all binaries
