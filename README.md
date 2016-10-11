@@ -10,6 +10,8 @@ This [Telegram Bot](https://core.telegram.org/bots/api) could responde you:
 Type */help* to show the Bot commands.
 
 
+[![Screenshot](jarvis-bot-0.1.0.png)
+
 ## Installation
 
 You can download the binaries :
