@@ -21,7 +21,11 @@ import (
 	"os"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
+	// "k8s.io/client-go/1.4/kubernetes"
+	// "k8s.io/client-go/1.4/pkg/api"
+	// "k8s.io/client-go/1.4/tools/clientcmd"
 
+	"github.com/zeiot/jarvis-bot/k8s"
 	"github.com/zeiot/jarvis-bot/version"
 )
 
@@ -30,6 +34,7 @@ func main() {
 		showVersion = flag.Bool("version", false, "Print version information.")
 		debug       = flag.Bool("debug", false, "Debug mode for Telegram.")
 		token       = flag.String("token", "", "Bot token.")
+		kubeconfig  = flag.String("kubeconfig", "./config", "Absolute path to the kubeconfig file")
 	)
 	flag.Parse()
 
@@ -38,9 +43,20 @@ func main() {
 		os.Exit(0)
 	}
 
+	k8sclient, err := k8s.NewKubernetesClient(*kubeconfig)
+	if err != nil {
+		log.Printf("[ERROR] Can't create Kubernetes client : %s", err)
+	}
+
+	k8swatcher, err := k8s.NewKubernetesWatcher(k8sclient.Clientset)
+	if err != nil {
+		log.Printf("[ERROR] Can't create Kubernetes Watcher : %s", err)
+	}
+	go k8swatcher.Watch()
+
 	bot, err := tgbotapi.NewBotAPI(*token)
 	if err != nil {
-		log.Printf("[ERROR] %s", err)
+		log.Printf("[ERROR] Create Telegram Bot failed %s", err)
 	}
 	if *debug {
 		bot.Debug = true
