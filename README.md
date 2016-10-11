@@ -2,7 +2,7 @@
 
 [![License Apache 2][badge-license]](LICENSE)
 
-This [Telegram Bot][https://core.telegram.org/bots/api] could responde you:
+This [Telegram Bot](https://core.telegram.org/bots/api) could responde you:
 
 * [x] last releases from the Jarvis project
 
