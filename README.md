@@ -4,8 +4,10 @@
 
 This [Telegram Bot](https://core.telegram.org/bots/api) could responde you:
 
-* [x] last releases from the Jarvis project
+* [x] last releases from the Jarvis project (*/releases* command)
 
+
+Type */help* to show the Bot commands.
 
 ## Contributing
 
