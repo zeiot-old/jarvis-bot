@@ -15,11 +15,14 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 
+	"github.com/zeiot/jarvis-bot/k8s"
 	"github.com/zeiot/jarvis-bot/version"
 )
 
@@ -35,7 +38,7 @@ var (
 	}
 )
 
-func route(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+func route(bot *tgbotapi.BotAPI, update tgbotapi.Update, k8sclient *k8s.Client) {
 	tokens := strings.Fields(update.Message.Text)
 	command := tokens[0]
 	switch command {
@@ -49,8 +52,52 @@ func route(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		text := getReleases()
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
 		bot.Send(msg)
+	case "/k8s-services":
+		text := getKubernetesServices(k8sclient)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
+		bot.Send(msg)
 	case "/version":
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("v%s", version.Version))
 		bot.Send(msg)
 	}
+}
+
+// func getReleases() string {
+// 	var buffer bytes.Buffer
+// 	buffer.WriteString("Releases:\n")
+
+// 	client := github.NewClient(nil)
+
+// 	opt := &github.RepositoryListByOrgOptions{Type: "public"}
+// 	repos, _, _ := client.Repositories.ListByOrg("Zeiot", opt)
+// 	for _, repo := range repos {
+// 		fmt.Printf("[DEBUG] Repo %s: %s\n", *repo.Owner.Login, *repo.ReleasesURL)
+// 		tags, _, _ := client.Repositories.ListTags("zeiot", *repo.Name, nil)
+// 		if len(tags) > 0 {
+// 			buffer.WriteString(fmt.Sprintf("- %s : %s\n", *repo.Name, *tags[0].Name))
+// 		}
+// 		// for _, tag := range tags {
+// 		// 	fmt.Printf("[DEBUG] Tag %s\n", *tag.Name)
+// 		// }
+// 	}
+// 	text := buffer.String()
+// 	log.Printf("[INFO] Github releases: %s", text)
+// 	return text
+// }
+
+func getKubernetesServices(k8sclient *k8s.Client) string {
+	var buffer bytes.Buffer
+	buffer.WriteString("Kubernetes Services:\n")
+	services, err := k8sclient.GetServices()
+	if err != nil {
+		log.Printf("[ERROR] Kubernetes services: %s", err.Error())
+		buffer.WriteString("Can't retrieve Kubernetes services")
+		return buffer.String()
+	}
+	for _, service := range services.Items {
+		buffer.WriteString(fmt.Sprintf("- %s\n", service.Name))
+	}
+	text := buffer.String()
+	log.Printf("[INFO] Kubernetes services: %s", text)
+	return text
 }

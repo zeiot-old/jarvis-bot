@@ -73,7 +73,7 @@ func main() {
 
 		log.Printf("[DEBUG] From: %s Message: %s", update.Message.From.UserName, update.Message.Text)
 		if len(update.Message.Text) > 1 && string(update.Message.Text[0]) == "/" {
-			route(bot, update)
+			route(bot, update, k8sclient)
 		}
 	}
 }

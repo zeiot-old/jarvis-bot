@@ -44,6 +44,12 @@ func getReleases() string {
 	return text
 }
 
+func getRepositories(client *github.Client) []github.Repository {
+	opt := &github.RepositoryListByOrgOptions{Type: "public"}
+	repos, _, _ := client.Repositories.ListByOrg("Zeiot", opt)
+	return repos
+}
+
 func getGithubRelease(client *github.Client, project string) (*string, error) {
 	log.Printf("[DEBUG] Get last release from Github: %s", project)
 	latestRelease, _, err := client.Repositories.GetLatestRelease("zeiot", project)

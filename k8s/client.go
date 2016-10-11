@@ -18,6 +18,8 @@ import (
 	"log"
 
 	"k8s.io/client-go/1.4/kubernetes"
+	"k8s.io/client-go/1.4/pkg/api"
+	"k8s.io/client-go/1.4/pkg/api/v1"
 	"k8s.io/client-go/1.4/tools/clientcmd"
 )
 
@@ -41,4 +43,12 @@ func NewKubernetesClient(kubeconfigPath string) (*Client, error) {
 	return &Client{
 		Clientset: clientset,
 	}, nil
+}
+
+func (client *Client) GetServices() (*v1.ServiceList, error) {
+	services, err := client.Clientset.Core().Services("").List(api.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return services, nil
 }
