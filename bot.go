@@ -57,6 +57,7 @@ func main() {
 	bot, err := tgbotapi.NewBotAPI(*token)
 	if err != nil {
 		log.Printf("[ERROR] Create Telegram Bot failed %s", err)
+		os.Exit(1)
 	}
 	if *debug {
 		bot.Debug = true
