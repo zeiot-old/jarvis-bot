@@ -62,29 +62,6 @@ func route(bot *tgbotapi.BotAPI, update tgbotapi.Update, k8sclient *k8s.Client) 
 	}
 }
 
-// func getReleases() string {
-// 	var buffer bytes.Buffer
-// 	buffer.WriteString("Releases:\n")
-
-// 	client := github.NewClient(nil)
-
-// 	opt := &github.RepositoryListByOrgOptions{Type: "public"}
-// 	repos, _, _ := client.Repositories.ListByOrg("Zeiot", opt)
-// 	for _, repo := range repos {
-// 		fmt.Printf("[DEBUG] Repo %s: %s\n", *repo.Owner.Login, *repo.ReleasesURL)
-// 		tags, _, _ := client.Repositories.ListTags("zeiot", *repo.Name, nil)
-// 		if len(tags) > 0 {
-// 			buffer.WriteString(fmt.Sprintf("- %s : %s\n", *repo.Name, *tags[0].Name))
-// 		}
-// 		// for _, tag := range tags {
-// 		// 	fmt.Printf("[DEBUG] Tag %s\n", *tag.Name)
-// 		// }
-// 	}
-// 	text := buffer.String()
-// 	log.Printf("[INFO] Github releases: %s", text)
-// 	return text
-// }
-
 func getKubernetesServices(k8sclient *k8s.Client) string {
 	var buffer bytes.Buffer
 	buffer.WriteString("Kubernetes Services:\n")

@@ -50,11 +50,11 @@ func getRepositories(client *github.Client) []github.Repository {
 	return repos
 }
 
-func getGithubRelease(client *github.Client, project string) (*string, error) {
-	log.Printf("[DEBUG] Get last release from Github: %s", project)
-	latestRelease, _, err := client.Repositories.GetLatestRelease("zeiot", project)
-	if err != nil {
-		return nil, err
-	}
-	return latestRelease.TagName, nil
-}
+// func getGithubRelease(client *github.Client, project string) (*string, error) {
+// 	log.Printf("[DEBUG] Get last release from Github: %s", project)
+// 	latestRelease, _, err := client.Repositories.GetLatestRelease("zeiot", project)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return latestRelease.TagName, nil
+// }
