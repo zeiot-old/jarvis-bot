@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,11 +44,17 @@ func getReleases() string {
 	return text
 }
 
-func getGithubRelease(client *github.Client, project string) (*string, error) {
-	log.Printf("[DEBUG] Get last release from Github: %s", project)
-	latestRelease, _, err := client.Repositories.GetLatestRelease("zeiot", project)
-	if err != nil {
-		return nil, err
-	}
-	return latestRelease.TagName, nil
+func getRepositories(client *github.Client) []github.Repository {
+	opt := &github.RepositoryListByOrgOptions{Type: "public"}
+	repos, _, _ := client.Repositories.ListByOrg("Zeiot", opt)
+	return repos
 }
+
+// func getGithubRelease(client *github.Client, project string) (*string, error) {
+// 	log.Printf("[DEBUG] Get last release from Github: %s", project)
+// 	latestRelease, _, err := client.Repositories.GetLatestRelease("zeiot", project)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return latestRelease.TagName, nil
+// }

@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,11 +15,14 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 
+	"github.com/zeiot/jarvis-bot/k8s"
 	"github.com/zeiot/jarvis-bot/version"
 )
 
@@ -35,7 +38,7 @@ var (
 	}
 )
 
-func route(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
+func route(bot *tgbotapi.BotAPI, update tgbotapi.Update, k8sclient *k8s.Client) {
 	tokens := strings.Fields(update.Message.Text)
 	command := tokens[0]
 	switch command {
@@ -49,8 +52,29 @@ func route(bot *tgbotapi.BotAPI, update tgbotapi.Update) {
 		text := getReleases()
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
 		bot.Send(msg)
+	case "/k8s-services":
+		text := getKubernetesServices(k8sclient)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
+		bot.Send(msg)
 	case "/version":
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, fmt.Sprintf("v%s", version.Version))
 		bot.Send(msg)
 	}
+}
+
+func getKubernetesServices(k8sclient *k8s.Client) string {
+	var buffer bytes.Buffer
+	buffer.WriteString("Kubernetes Services:\n")
+	services, err := k8sclient.GetServices()
+	if err != nil {
+		log.Printf("[ERROR] Kubernetes services: %s", err.Error())
+		buffer.WriteString("Can't retrieve Kubernetes services")
+		return buffer.String()
+	}
+	for _, service := range services.Items {
+		buffer.WriteString(fmt.Sprintf("- %s\n", service.Name))
+	}
+	text := buffer.String()
+	log.Printf("[INFO] Kubernetes services: %s", text)
+	return text
 }

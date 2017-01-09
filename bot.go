@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2016-2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import (
 
 	"github.com/go-telegram-bot-api/telegram-bot-api"
 
+	"github.com/zeiot/jarvis-bot/k8s"
 	"github.com/zeiot/jarvis-bot/version"
 )
 
@@ -30,6 +31,7 @@ func main() {
 		showVersion = flag.Bool("version", false, "Print version information.")
 		debug       = flag.Bool("debug", false, "Debug mode for Telegram.")
 		token       = flag.String("token", "", "Bot token.")
+		kubeconfig  = flag.String("kubeconfig", "./config", "Absolute path to the kubeconfig file")
 	)
 	flag.Parse()
 
@@ -38,9 +40,21 @@ func main() {
 		os.Exit(0)
 	}
 
+	k8sclient, err := k8s.NewKubernetesClient(*kubeconfig)
+	if err != nil {
+		log.Printf("[ERROR] Can't create Kubernetes client : %s", err)
+	}
+
+	k8swatcher, err := k8s.NewKubernetesWatcher(k8sclient.Clientset)
+	if err != nil {
+		log.Printf("[ERROR] Can't create Kubernetes Watcher : %s", err)
+	}
+	go k8swatcher.Watch()
+
 	bot, err := tgbotapi.NewBotAPI(*token)
 	if err != nil {
-		log.Printf("[ERROR] %s", err)
+		log.Printf("[ERROR] Create Telegram Bot failed %s", err)
+		os.Exit(1)
 	}
 	if *debug {
 		bot.Debug = true
@@ -57,7 +71,7 @@ func main() {
 
 		log.Printf("[DEBUG] From: %s Message: %s", update.Message.From.UserName, update.Message.Text)
 		if len(update.Message.Text) > 1 && string(update.Message.Text[0]) == "/" {
-			route(bot, update)
+			route(bot, update, k8sclient)
 		}
 	}
 }
