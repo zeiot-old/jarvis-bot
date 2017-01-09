@@ -51,7 +51,7 @@ func route(bot *tgbotapi.BotAPI, update tgbotapi.Update, k8sclient *k8s.Client) 
 		bot.Send(msg)
 	case "/about":
 		text := getAboutMessage()
-		tgbotapi.NewMessage(update.Message.Chat.ID, text)
+		msg := tgbotapi.NewMessage(update.Message.Chat.ID, text)
 		bot.Send(msg)
 	case "/releases":
 		text := getReleases()
