@@ -31,9 +31,10 @@ var (
 
 	messages = map[string]string{
 		"Help": `You can use the following commands:
-        /releases : Display last release of components
-	/help     : Display help message
-	/version  : Show bot version
+/releases : Display last release of components
+/help     : Display help message
+/about    : About this bot
+/version  : Show bot version
 	`,
 	}
 )
@@ -47,6 +48,9 @@ func route(bot *tgbotapi.BotAPI, update tgbotapi.Update, k8sclient *k8s.Client) 
 		bot.Send(msg)
 	case "/help@" + botName:
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, messages["Help"])
+		bot.Send(msg)
+	case "/about":
+		msg := getAboutMessage()
 		bot.Send(msg)
 	case "/releases":
 		text := getReleases()
@@ -76,5 +80,15 @@ func getKubernetesServices(k8sclient *k8s.Client) string {
 	}
 	text := buffer.String()
 	log.Printf("[INFO] Kubernetes services: %s", text)
+	return text
+}
+
+func getAboutMessage() string {
+	var buffer bytes.Buffer
+	buffer.WriteString("Telegram bot for Jarvis platform.\n")
+	buffer.WriteString("Homepage: https://github.com/zeiot/jarvis-bot\n")
+	buffer.WriteString("Releases: https://github.com/zeiot/jarvis-bot/releases\n")
+	buffer.WriteString("Issues: https://github.com/zeiot/jarvis-bot/issues\n")
+	text := buffer.String()
 	return text
 }
