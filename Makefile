@@ -1,4 +1,4 @@
-# Copyright (C) 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+# Copyright (C) 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ SHELL = /bin/bash
 DIR = $(shell pwd)
 
 DOCKER = docker
+NAMESPACE = zeiot
+IMAGE = jarvis-bot
 
 GO = go
 GLIDE = glide
@@ -118,6 +120,26 @@ binaries: ## Upload all binaries
 			-u$(BINTRAY_USERNAME):$(BINTRAY_APIKEY) \
 			"$(BINTRAY_URI)/content/$(BINTRAY_ORG)/$(BINTRAY_REPOSITORY)/$(APP)/${VERSION}/$$i;publish=1"; \
         done
+
+
+.PHONY: docker-build
+docker-build: ## Build Docker image
+	@echo -e "$(OK_COLOR)[$(APP)] build $(NAMESPACE)/$(IMAGE):$(VERSION)$(NO_COLOR)"
+	@$(DOCKER) build -t $(NAMESPACE)/$(IMAGE):$(VERSION) .
+
+.PHONY: docker-run
+docker-run: ## Run Docker image
+	@echo -e "$(OK_COLOR)[$(APP)] run $(NAMESPACE)/$(IMAGE):$(VERSION)$(NO_COLOR)"
+	@$(DOCKER) run --rm=true $(NAMESPACE)/$(IMAGE):$(VERSION)
+
+.PHONY: docker-login
+docker-login: ## Log into Docker hub
+	@$(DOCKER) login
+
+.PHONY: docker-publish
+docker-publish: ## Publish Docker image
+	@echo -e "$(OK_COLOR)[$(APP)] Publish $(NAMESPACE)/$(IMAGE):$(VERSION)$(NO_COLOR)"
+	@$(DOCKER) push $(NAMESPACE)/$(IMAGE):$(VERSION)
 
 # for goprojectile
 .PHONY: gopath

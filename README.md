@@ -23,11 +23,19 @@ You can download the binaries :
 
 ## Usage
 
-Just talk to [BotFather](https://telegram.me/botfather) and follow a few simple steps. Once you've created a bot and received your authorization token, launch the bot :
-
-    ./jarvis-bot -token xxxxxxxxxxxxxxx
-
+Just talk to [BotFather](https://telegram.me/botfather) and follow a few simple steps. Once you've created a bot and received your authorization token, launch the bot.
 On your phone, install the [Telegram](https://play.google.com/store/apps/details?id=org.telegram.messenger) application and talk to your bot.
+
+### Executable
+
+    $ jarvis-bot -token xxxxxxxxxxxxxxx
+
+### Docker
+
+    $ docker run zeiot/jarvis-bot:0.1.0 -token xxxxxxxxxxxxxxx
+
+
+See *--help* command for more options.
 
 
 ## Contributing
