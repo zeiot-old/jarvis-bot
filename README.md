@@ -2,6 +2,10 @@
 
 [![License Apache 2][badge-license]](LICENSE)
 
+* Master : [![Circle CI](https://circleci.com/gh/zeiot/jarvis-bot/tree/master.svg?style=svg)](https://circleci.com/gh/zeiot/jarvis-bot/tree/master)
+* Develop : [![Circle CI](https://circleci.com/gh/zeiot/jarvis-bot/tree/develop.svg?style=svg)](https://circleci.com/gh/zeiot/jarvis-bot/tree/develop)
+
+
 This [Telegram Bot](https://core.telegram.org/bots/api) could responde you:
 
 * [x] last releases from the Jarvis project (*/releases* command)
