@@ -1,4 +1,4 @@
-// Copyright (C) 2016 Nicolas Lamirault <nicolas.lamirault@gmail.com>
+// Copyright (C) 2016, 2017 Nicolas Lamirault <nicolas.lamirault@gmail.com>
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -75,12 +75,12 @@ func (watcher *Watcher) listen() bool {
 		}
 		svc := ev.Object.(*v1.Service)
 		manageServiceEvent(ev.Type, svc)
-	case ev, ok := <-watcher.Endpoints.ResultChan():
-		if !ok {
-			return false
-		}
-		endpoints := ev.Object.(*v1.Endpoints)
-		manageEndpointsEvent(ev.Type, endpoints)
+		// case ev, ok := <-watcher.Endpoints.ResultChan():
+		// 	if !ok {
+		// 		return false
+		// 	}
+		// 	endpoints := ev.Object.(*v1.Endpoints)
+		// 	manageEndpointsEvent(ev.Type, endpoints)
 	}
 	return true
 
