@@ -16,6 +16,6 @@ test:
     - go version
   override:
     - mkdir -p ~/.go_workspace/src/github.com/zeiot
-    - ln -s ~/chione ~/.go_workspace/src/github.com/zeiot/
+    - ln -s ~/jarvis-bot ~/.go_workspace/src/github.com/zeiot/
     - cd ~/.go_workspace/src/github.com/zeiot/jarvis-bot && make build
     - cd ~/.go_workspace/src/github.com/zeiot/jarvis-bot && make test lint vet coverage
