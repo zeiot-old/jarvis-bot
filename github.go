@@ -44,7 +44,7 @@ func getReleases() string {
 	return text
 }
 
-func getRepositories(client *github.Client) []github.Repository {
+func getRepositories(client *github.Client) []*github.Repository {
 	opt := &github.RepositoryListByOrgOptions{Type: "public"}
 	repos, _, _ := client.Repositories.ListByOrg("Zeiot", opt)
 	return repos
