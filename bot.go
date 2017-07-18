@@ -20,9 +20,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/go-telegram-bot-api/telegram-bot-api"
+	// "github.com/go-telegram-bot-api/telegram-bot-api"
 
 	"github.com/zeiot/jarvis-bot/k8s"
+	"github.com/zeiot/jarvis-bot/telegram"
 	"github.com/zeiot/jarvis-bot/version"
 )
 
@@ -51,27 +52,37 @@ func main() {
 	}
 	go k8swatcher.Watch()
 
-	bot, err := tgbotapi.NewBotAPI(*token)
+	// bot, err := tgbotapi.NewBotAPI(*token)
+	// if err != nil {
+	// 	log.Printf("[ERROR] Create Telegram Bot failed %s", err)
+	// 	os.Exit(1)
+	// }
+	// if *debug {
+	// 	bot.Debug = true
+	// }
+	// log.Printf("[INFO] %ss is ready.\n", bot.Self.UserName)
+	// updConfig := tgbotapi.NewUpdate(0)
+	// updConfig.Timeout = 60
+	// updates, err := bot.GetUpdatesChan(updConfig)
+
+	// for update := range updates {
+	// 	if update.Message == nil {
+	// 		continue
+	// 	}
+
+	// 	log.Printf("[DEBUG] From: %s Message: %s", update.Message.From.UserName, update.Message.Text)
+	// 	if len(update.Message.Text) > 1 && string(update.Message.Text[0]) == "/" {
+	// 		route(bot, update, k8sclient)
+	// 	}
+	// }
+
+	telegramClient, err := telegram.NewClient(*token, *debug)
 	if err != nil {
-		log.Printf("[ERROR] Create Telegram Bot failed %s", err)
+		log.Printf("[ERROR] Telegram: %s", err)
 		os.Exit(1)
 	}
-	if *debug {
-		bot.Debug = true
-	}
-	log.Printf("[INFO] %ss is ready.\n", bot.Self.UserName)
-	updConfig := tgbotapi.NewUpdate(0)
-	updConfig.Timeout = 60
-	updates, err := bot.GetUpdatesChan(updConfig)
-
-	for update := range updates {
-		if update.Message == nil {
-			continue
-		}
-
-		log.Printf("[DEBUG] From: %s Message: %s", update.Message.From.UserName, update.Message.Text)
-		if len(update.Message.Text) > 1 && string(update.Message.Text[0]) == "/" {
-			route(bot, update, k8sclient)
-		}
+	if err := telegramClient.Run(k8sclient); err != nil {
+		log.Printf("[ERROR] %s", err)
+		os.Exit(1)
 	}
 }

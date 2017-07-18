@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package telegram
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"log"
 
@@ -27,11 +28,12 @@ func getReleases() string {
 	buffer.WriteString("Releases:\n")
 
 	client := github.NewClient(nil)
+	ctx := context.Background()
 	opt := &github.RepositoryListByOrgOptions{Type: "public"}
-	repos, _, _ := client.Repositories.ListByOrg("Zeiot", opt)
+	repos, _, _ := client.Repositories.ListByOrg(ctx, "Zeiot", opt)
 	for _, repo := range repos {
 		fmt.Printf("[DEBUG] Repo %s: %s\n", *repo.Owner.Login, *repo.ReleasesURL)
-		tags, _, _ := client.Repositories.ListTags("zeiot", *repo.Name, nil)
+		tags, _, _ := client.Repositories.ListTags(ctx, "zeiot", *repo.Name, nil)
 		if len(tags) > 0 {
 			buffer.WriteString(fmt.Sprintf("- %s : %s\n", *repo.Name, *tags[0].Name))
 		}
@@ -46,7 +48,7 @@ func getReleases() string {
 
 func getRepositories(client *github.Client) []*github.Repository {
 	opt := &github.RepositoryListByOrgOptions{Type: "public"}
-	repos, _, _ := client.Repositories.ListByOrg("Zeiot", opt)
+	repos, _, _ := client.Repositories.ListByOrg(context.Background(), "Zeiot", opt)
 	return repos
 }
 
