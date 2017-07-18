@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-APP = jarvis-bot
+APP = helmsman
 
 VERSION=$(shell \
         grep "const Version" version/version.go \
@@ -25,8 +25,6 @@ SHELL = /bin/bash
 DIR = $(shell pwd)
 
 DOCKER = docker
-NAMESPACE = zeiot
-IMAGE = jarvis-bot
 
 GO = go
 GLIDE = glide
@@ -37,7 +35,7 @@ GOX_ARGS = "-output={{.Dir}}-$(VERSION)_{{.OS}}_{{.Arch}}"
 BINTRAY_URI = https://api.bintray.com
 BINTRAY_USERNAME = nlamirault
 BINTRAY_ORG = zeiot
-BINTRAY_REPOSITORY= jarvis
+BINTRAY_REPOSITORY= oss
 
 NO_COLOR=\033[0m
 OK_COLOR=\033[32;01m
@@ -46,10 +44,9 @@ WARN_COLOR=\033[33;01m
 
 MAKE_COLOR=\033[33;01m%-20s\033[0m
 
-MAIN = github.com/Zeiot/jarvis-bot
+MAIN = github.com/zeiot/jarvis-bot
 SRCS = $(shell git ls-files '*.go' | grep -v '^vendor/')
-PKGS = $(shell glide novendor)
-EXE = $(shell ls jarvis-bot-${VERSION}_*)
+EXE = $(shell ls jarvis-bot-*_*)
 
 PACKAGE=$(APP)-$(VERSION)
 ARCHIVE=$(PACKAGE).tar
@@ -69,6 +66,7 @@ clean: ## Cleanup
 init: ## Install requirements
 	@echo -e "$(OK_COLOR)[$(APP)] Install requirements$(NO_COLOR)"
 	@go get -u github.com/golang/glog
+	@go get -u github.com/kardianos/govendor
 	@go get -u github.com/Masterminds/rmvcsdir
 	@go get -u github.com/golang/lint/golint
 	@go get -u github.com/kisielk/errcheck
@@ -77,7 +75,7 @@ init: ## Install requirements
 .PHONY: deps
 deps: ## Install dependencies
 	@echo -e "$(OK_COLOR)[$(APP)] Update dependencies$(NO_COLOR)"
-	@glide up -u -s -v
+	@govendor update
 
 .PHONY: build
 build: ## Make binary
@@ -87,7 +85,7 @@ build: ## Make binary
 .PHONY: test
 test: ## Launch unit tests
 	@echo -e "$(OK_COLOR)[$(APP)] Launch unit tests $(NO_COLOR)"
-	@$(GO) test -v $$(glide nv)
+	@govendor test +local
 
 .PHONY: lint
 lint: ## Launch golint
@@ -108,7 +106,7 @@ coverage: ## Launch code coverage
 
 gox: ## Make all binaries
 	@echo -e "$(OK_COLOR)[$(APP)] Create binaries $(NO_COLOR)"
-	$(GOX) $(GOX_ARGS) github.com/zeiot/jarvis-bot
+	$(GOX) $(GOX_ARGS) github.com/nlamirault/helmsman
 
 .PHONY: binaries
 binaries: ## Upload all binaries
@@ -118,26 +116,6 @@ binaries: ## Upload all binaries
 			-u$(BINTRAY_USERNAME):$(BINTRAY_APIKEY) \
 			"$(BINTRAY_URI)/content/$(BINTRAY_ORG)/$(BINTRAY_REPOSITORY)/$(APP)/${VERSION}/$$i;publish=1"; \
         done
-
-
-.PHONY: docker-build
-docker-build: ## Build Docker image
-	@echo -e "$(OK_COLOR)[$(APP)] build $(NAMESPACE)/$(IMAGE):$(VERSION)$(NO_COLOR)"
-	@$(DOCKER) build -t $(NAMESPACE)/$(IMAGE):$(VERSION) .
-
-.PHONY: docker-run
-docker-run: ## Run Docker image
-	@echo -e "$(OK_COLOR)[$(APP)] run $(NAMESPACE)/$(IMAGE):$(VERSION)$(NO_COLOR)"
-	@$(DOCKER) run --rm=true $(NAMESPACE)/$(IMAGE):$(VERSION)
-
-.PHONY: docker-login
-docker-login: ## Log into Docker hub
-	@$(DOCKER) login
-
-.PHONY: docker-publish
-docker-publish: ## Publish Docker image
-	@echo -e "$(OK_COLOR)[$(APP)] Publish $(NAMESPACE)/$(IMAGE):$(VERSION)$(NO_COLOR)"
-	@$(DOCKER) push $(NAMESPACE)/$(IMAGE):$(VERSION)
 
 # for goprojectile
 .PHONY: gopath
